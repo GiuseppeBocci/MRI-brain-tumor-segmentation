@@ -12,113 +12,25 @@ v = MRId.vol;
 %     imshow(v(:,:,s))
 % end
 
-sli = 65;
-slf = 89;
-
 %% ROI
 close all
 %I = v(:,:,slice);
 %[cropped, rect] = imcrop(I);
 rect = [133.5100  103.5100   51.9800   44.9800];
 
-dimC = size(imcrop(v(:,:,1),rect));
-
-roi = zeros(dimC(1), dimC(2), slf-sli+1, "uint8");
-lenS = slf-sli+1;
-for s = 1:lenS
-    % figure
-    I = imadjust(imcrop(v(:,:,s+sli-1),rect));
-    % imshow(I)
-    % figure
-    % imshow(imadjust(I))
-    roi(:,:,s) = I;
-    
-    figure
-    imshow(roi(:,:,s))
-end
-
-%% Using Edge detection
-
-close all
-
-edges = zeros(dimC(1), dimC(2), slf-sli+1);
-for s = 1:lenS
-    edges(:, :, s) = edge(roi(:,:,s) , 'log');
-end
-
-
-se90 = strel('line',3,90);
-se0 = strel('line',3,0);
-seD = strel('diamond',1);
-
-mask = zeros(dimC(1), dimC(2), slf-sli+1);
-
-for s = 1:lenS
-    idil = imdilate(edges(:,:,s),[se90 se0]);
-    ifill = imfill(idil);
-    mf = imerode(ifill,seD);
-    mf = imerode(mf,seD);
-
-    mask(:,:,s) = mf;
-
-    %figure
-    %imshow(mask(:,:,s))
-end 
-
-for s = 1:lenS
-    figure
-    imshow(labeloverlay(roi(:,:,s),mask(:,:,s)))
-end
-
-%% Using just logical
-% Image adjustment is important here, in edges about nothing changes
-
-close all
-
-I = roi(:,:,10);
-figure
-subplot(1,2,1)
-imshow(I)
-subplot(1,2,2)
-histogram(I)
-
-seD = strel('diamond',1);
-
-thMask = zeros(dimC(1), dimC(2), slf-sli+1, "double");
-for s = 1:lenS
-    I = roi(:,:,s);
-
-    for i = 1:45
-        for j = 1:52
-            thMask(i,j, s) = I(i,j) >= 140;    
-        end
-    end
-    
-    % figure
-    % imshow(255*I)
-end
-
-thMask = 255*thMask;
-for s = 1:lenS
-    thMask(:,:,s) = imerode(imfill(thMask(:,:,s)), seD);
-    figure
-    imshow(labeloverlay(roi(:,:,s),thMask(:,:,s)))
-end
-
-
-% for s = sli:slf
-%     figure
-%     imshow(logical(roi(:,:,s)))
-% end
+[mask, thMask] = tumorMasks(v, rect, 65, 90);
 
 %% VOLUMES
+close all
 
+lmasks = size(mask);
+lenS = lmasks(3);
 pixelVol = MRId.pixdim(1)*MRId.pixdim(2)*MRId.pixdim(3) % mm^3
 areaE = zeros(lenS,1);
 areaT = zeros(lenS,1);
 for s = 1:lenS
-    for i = 1:45
-        for j = 1:52
+    for i = 1:lmasks(1)
+        for j = 1:lmasks(2)
             if(mask(i,j,s) ~= 0)
                 areaE(s,1) = areaE(s,1) + 1;
             end
@@ -131,7 +43,23 @@ end
 
 volE = pixelVol*sum(areaE)
 volT = pixelVol*sum(areaT)
+volumeViewer(mask)
+volumeViewer(thMask)
 
+%%
+volumeViewer close
+
+%%
+numSlices = round(MRId.pixdim(3)*size(v,3)/MRId.pixdim(1));
+DTransverseIsotropic = imresize3(v,[256 256 numSlices]);
+DSagittal = permute(DTransverseIsotropic,[1 3 2]);
+DSagittalRotated = imrotate3(DSagittal,90,[0 0 1],"cubic");
+figure
+montage(DSagittalRotated,colormap("gray"))
+title("Sagittal Slices")
+volumeViewer(DSagittalRotated)
+figure 
+imshow(DSagittalRotated(:,:,135))
 %%
 % figure
 % imshow(I)
