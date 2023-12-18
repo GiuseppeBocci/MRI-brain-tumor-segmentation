@@ -81,7 +81,7 @@ LOW_in = min_roi;
 HIGH_in = max_roi;
 LOW_out = 0;
 HIGH_out = 1;
-gamma = 1.7; %increasing gamma, the image results more black
+gamma = 1.5; %increasing gamma, the image results more black
 
 for s = 1:lenS
     roi_gamma(:,:,s) = imadjust(roi_LUT(:,:,s), [LOW_in HIGH_in], [LOW_out HIGH_out], gamma);
