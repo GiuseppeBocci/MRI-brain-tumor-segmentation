@@ -61,10 +61,11 @@ end
 sgtitle('Histogram ROI original')
 
 %% Look up table
+lim = 90;
 for s = 1:lenS
     roi_it = roi(:,:,s);
-    roi_it(roi(:,:,s)<=10) = 90;
-    roi_it(roi(:,:,s)>235) = 90;
+    roi_it(roi(:,:,s) <= 25) = lim;
+    roi_it(roi(:,:,s) > 250) = lim;
     roi_LUT(:,:,s) = roi_it;
 end
 

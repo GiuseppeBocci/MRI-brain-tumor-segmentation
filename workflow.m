@@ -59,7 +59,6 @@ sli_sag = 112;
 lenS = slf_sag-sli_sag+1;
 sub_row = 6;
 sub_col = 7;
-%rect = [125.5100  15.5100   60.9800   40.9800]; %with white part
 rect = [139.5100   20.5100   37.9800   29.9800];
 
 for s = 1:lenS
@@ -79,10 +78,11 @@ end
 sgtitle('Histogram ROI original')
 
 %% Look up table
+lim = 90;
 for s = 1:lenS
     roi_it = roi(:,:,s);
-    roi_it(roi(:,:,s)<=10) = 90;
-    roi_it(roi(:,:,s)>235) = 90;
+    roi_it(roi(:,:,s) <= 25) = lim;
+    roi_it(roi(:,:,s) > 250) = lim;
     roi_LUT(:,:,s) = roi_it;
 end
 
@@ -138,7 +138,7 @@ sgtitle(str)
 %% Increase the contrast with average filter
 dim_avg = 3;
 avg_filt = (1/dim_avg^2).*ones(dim_avg, dim_avg);
-roi_contrast = imfilter(roi, avg_filt, 'conv');
+roi_contrast = imfilter(roi_gamma, avg_filt, 'conv');
 
 figure
 montage(roi_contrast)
