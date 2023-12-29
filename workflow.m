@@ -20,7 +20,7 @@ montage(v_sag);
 title('MRI sagittal')
 
 %% Slide 135
-
+pixelArea = MRId.pixdim(1)*MRId.pixdim(2); % mm^2
 %Select a ROI
 rect = [137.5100   20.5100   42.9800   29.9800];
 dimC = size(imcrop(v_sag(:,:,1),rect));
@@ -50,7 +50,7 @@ str = sprintf('Binary of slice %.0f', slice);
 title(str)
 
 %Area
-area_slice = bwarea(ifill_slice);
+area_slice = pixelArea*bwarea(ifill_slice);
 
 %% Sagittal volume
 %Select a ROI
@@ -98,7 +98,7 @@ LOW_in = min_roi;
 HIGH_in = max_roi;
 LOW_out = 0;
 HIGH_out = 1;
-gamma = 1.5; %increasing gamma, the image results more black
+gamma = 1.7;
 
 for s = 1:lenS
     roi_gamma(:,:,s) = imadjust(roi_LUT(:,:,s), [LOW_in HIGH_in], [LOW_out HIGH_out], gamma);
@@ -116,24 +116,6 @@ for s = 1:lenS
 end
 str = sprintf('Histogram ROI with contrast %.1f', gamma);
 sgtitle(str)
-
-% %% Increase the contrast with median filter
-% %med remove salt and pepper noise better than avg
-% dim_med = 3;
-% for s = 1:lenS
-%     roi_contrast(:,:,s) = medfilt2(roi_gamma(:,:,s), [dim_med dim_med]);
-% end
-% 
-% figure
-% montage(roi_contrast)
-% title('ROI after applying median filter')
-% 
-% figure
-% for s = 1:lenS
-%     subplot(sub_row, sub_col, s)
-%     imhist(roi_contrast(:,:,s), 256)
-% end
-% sgtitle('Histogram ROI after applying median filter')
 
 %% Increase the contrast with average filter
 dim_avg = 3;
@@ -172,7 +154,7 @@ for s = 1:lenS
 end
 sgtitle('Check edges')
 
-% volumeViewer(thMask)
+%volumeViewer(thMask)
 
 %% Area of the tumor
 pixelVol = MRId.pixdim(1)*MRId.pixdim(2)*MRId.pixdim(3); % mm^3

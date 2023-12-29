@@ -9,17 +9,17 @@ v_ax = MRId.vol;
 figure
 montage(v_ax), title('MRI sagittal')
 
-%Noise
+%% Add noise
+%Select the noise you want to add
 %Gaussian noise
 v_ax = imnoise(v_ax, 'gaussian', 0, 1e-3);
-%v_ax = imnoise(v_ax, 'gaussian', 0, 0.1); %no med, trova qualcosa avg
-%v_ax = imnoise(v_ax, 'gaussian', 0.5, 1e-3); %contrario med and avg
+%v_ax = imnoise(v_ax, 'gaussian', 0, 0.1);
+%v_ax = imnoise(v_ax, 'gaussian', 0.5, 1e-3);
 
 %Salt and pepper
 %v_ax = imnoise(v_ax, 'salt & pepper', 0.05);
 %v_ax = imnoise(v_ax, 'salt & pepper', 0.2);
-%v_ax = imnoise(v_ax, 'salt & pepper', 0.35); avg ha meno buchi, ma a volte
-%perde la forma
+%v_ax = imnoise(v_ax, 'salt & pepper', 0.35);
 
 figure
 montage(v_ax)
@@ -41,7 +41,6 @@ sli_sag = 112;
 lenS = slf_sag-sli_sag+1;
 sub_row = 6;
 sub_col = 7;
-%rect = [125.5100  15.5100   60.9800   40.9800]; %with white part
 rect = [139.5100   20.5100   37.9800   29.9800];
 
 for s = 1:lenS
@@ -81,7 +80,7 @@ LOW_in = min_roi;
 HIGH_in = max_roi;
 LOW_out = 0;
 HIGH_out = 1;
-gamma = 1.5; %increasing gamma, the image results more black
+gamma = 1.7; %increasing gamma, the image results more black
 
 for s = 1:lenS
     roi_gamma(:,:,s) = imadjust(roi_LUT(:,:,s), [LOW_in HIGH_in], [LOW_out HIGH_out], gamma);
@@ -99,24 +98,6 @@ for s = 1:lenS
 end
 str = sprintf('Histogram ROI with contrast %.1f', gamma);
 sgtitle(str)
-
-%% Increase the contrast with median filter
-% %med remove salt and pepper noise better than avg
-% dim_med = 3;
-% for s = 1:lenS
-%     roi_contrast(:,:,s) = medfilt2(roi_gamma(:,:,s), [dim_med dim_med]);
-% end
-% 
-% figure
-% montage(roi_contrast)
-% title('ROI after applying median filter')
-% 
-% figure
-% for s = 1:lenS
-%     subplot(sub_row, sub_col, s)
-%     imhist(roi_contrast(:,:,s), 256)
-% end
-% sgtitle('Histogram ROI after applying median filter')
 
 %% Increase the contrast with average filter
 dim_avg = 3;

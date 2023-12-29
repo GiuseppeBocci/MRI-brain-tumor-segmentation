@@ -32,6 +32,7 @@ str = sprintf('ROI of slice %.0f', slice);
 title(str)
 
 %% Automatic segmentation of slice 135
+pixelArea = MRId.pixdim(1)*MRId.pixdim(2); % mm^2
 %Edge detection
 edge_slice = edge(roi_slice, 'canny');
 
@@ -49,12 +50,13 @@ str = sprintf('Binary of slice %.0f', slice);
 title(str)
 
 %Area
-area_automatic = bwarea(ifill_slice);
+area_automatic = pixelArea*bwarea(ifill_slice);
 
 %% Manually segmentation of slice 135
 imageSegmenter(roi_slice);
 
 %% Plot of manually segmentation
+pixelArea = MRId.pixdim(1)*MRId.pixdim(2); % mm^2
 maskedImage = logical(maskedImage);
 
 subplot(2,2,4)
@@ -63,7 +65,7 @@ str = sprintf('Manual binary of slice %.0f', slice);
 title(str)
 
 %Area
-area_manual = bwarea(maskedImage);
+area_manual = pixelArea*bwarea(maskedImage);
 
 %% Segmentation performances
 for j = 1:dimC(1)
