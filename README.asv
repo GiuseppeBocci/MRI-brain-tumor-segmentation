@@ -6,4 +6,4 @@ estimation of its volume. It is possible to add noise uncommenting the
 dedicated secontion.
 
 # workflow_manul.m
-Contains the elaboration and the c
+Compare the automatic and manual workflow for slice 135 (255-135 for us) 
