@@ -1,3 +1,4 @@
+%% Import 
 clear
 close all
 clc
@@ -6,6 +7,19 @@ clc
 MRId = load('MRIdata.mat');
 v_ax = MRId.vol;
 
+%% Add noise
+%Uncomment the noise you want to add
+%Gaussian noise
+%v_ax = imnoise(v_ax, 'gaussian', 0, 1e-3);
+%v_ax = imnoise(v_ax, 'gaussian', 0, 0.1);
+%v_ax = imnoise(v_ax, 'gaussian', 0.5, 1e-3);
+
+%Salt and pepper
+%v_ax = imnoise(v_ax, 'salt & pepper', 0.05);
+%v_ax = imnoise(v_ax, 'salt & pepper', 0.2);
+%v_ax = imnoise(v_ax, 'salt & pepper', 0.35);
+
+%% Views
 figure
 montage(v_ax)
 title("MRI axial")
@@ -19,8 +33,11 @@ figure
 montage(v_sag);
 title('MRI sagittal')
 
-%% Slide 135
 pixelArea = MRId.pixdim(1)*MRId.pixdim(2); % mm^2
+pixelVol = MRId.pixdim(1)*MRId.pixdim(2)*MRId.pixdim(3); % mm^3
+
+%% Slide 135
+
 %Select a ROI
 rect = [137.5100   20.5100   42.9800   29.9800];
 dimC = size(imcrop(v_sag(:,:,1),rect));
@@ -61,6 +78,9 @@ sub_row = 6;
 sub_col = 7;
 rect = [139.5100   20.5100   37.9800   29.9800];
 
+dimS = size(imcrop(v_sag(:,:,1),rect));
+
+roi = zeros(dimS(1), dimS(2), lenS, "uint8"); % 256 grayscale
 for s = 1:lenS
     I = imcrop(v_sag(:,:,s+sli_sag-1),rect);
     roi(:,:,s) = I;
@@ -79,6 +99,7 @@ sgtitle('Histogram ROI original')
 
 %% Look up table
 lim = 90;
+roi_LUT = zeros(dimS(1), dimS(2), lenS, "uint8");
 for s = 1:lenS
     roi_it = roi(:,:,s);
     roi_it(roi(:,:,s) <= 25) = lim;
@@ -100,6 +121,7 @@ LOW_out = 0;
 HIGH_out = 1;
 gamma = 1.7;
 
+roi_gamma = zeros(dimS(1), dimS(2), lenS);
 for s = 1:lenS
     roi_gamma(:,:,s) = imadjust(roi_LUT(:,:,s), [LOW_in HIGH_in], [LOW_out HIGH_out], gamma);
 end
@@ -156,19 +178,17 @@ sgtitle('Check edges')
 
 %volumeViewer(thMask)
 
-%% Area of the tumor
-pixelVol = MRId.pixdim(1)*MRId.pixdim(2)*MRId.pixdim(3); % mm^3
-area= zeros(lenS,1);
+%% Area of the tumor sagittal
+
+area= zeros(lenS, 1);
 for s = 1:lenS
-    area(s,1) = bwarea(thMask(:,:,s));
+    area(s) = bwarea(thMask(:,:,s));
 end
 
-vol_tumor = pixelVol*sum(area);
+vol_tumor_sagittal = pixelVol*sum(area);
+disp("Sagittal tumor volume is: "+num2str(vol_tumor_sagittal*10^-3)+" cm^3");
 
 %% Axial view
-clear roi
-clear roi_contrast
-clear thMask
 
 %Select ROI
 rect = [135.5100  103.5100   46.9800   42.9800];
@@ -177,6 +197,9 @@ sli_ax = 65;
 lenS = slf_ax-sli_ax+1;
 sub_row = 6;
 sub_col = 5;
+
+dimA = size(imcrop(v_ax(:,:,1),rect));
+roi = zeros(dimA(1), dimA(2), lenS, "uint8"); % 256 grayscal
 
 for s = 1:lenS
     I = imcrop(v_ax(:,:,s+sli_ax-1),rect);
@@ -196,6 +219,8 @@ sgtitle('Histogram ROI original')
 
 %% Increase the contrast with median filter
 dim_med = 3;
+
+roi_contrast = zeros(dimA(1), dimA(2), lenS, "uint8"); % 256 grayscal
 for s = 1:lenS
     roi_contrast(:,:,s) = medfilt2(roi(:,:,s), [dim_med dim_med]);
 end
@@ -234,3 +259,12 @@ sgtitle('Check edges')
 
 %volumeViewer(thMask)
 
+%% Area of the tumor axial
+
+area= zeros(lenS,1);
+for s = 1:lenS
+    area(s) = bwarea(thMask(:,:,s));
+end
+
+vol_tumor_axial = pixelVol*sum(area);
+disp("Axial tumor volume is: "+num2str(vol_tumor_axial*10^-3)+" cm^3");

@@ -1,0 +1,9 @@
+# MRI-brain-tumor-segmentation
+
+# workflow.m
+Contains the elaboration workflow for the segmentation of the tumor and the
+estimation of its volume. It is possible to add noise uncommenting the
+dedicated secontion.
+
+# workflow_manul.m
+Contains the elaboration and the c
