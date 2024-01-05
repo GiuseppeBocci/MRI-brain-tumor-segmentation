@@ -69,6 +69,10 @@ title(str)
 area_manual = pixelArea*bwarea(maskedImage);
 
 %% Segmentation performances
+TP = zeros(dimC(1),dimC(2));
+TN = zeros(dimC(1),dimC(2));
+FP = zeros(dimC(1),dimC(2));
+FN = zeros(dimC(1),dimC(2));
 for j = 1:dimC(1)
     for i = 1: dimC(2)
         TP(j,i) = ((ifill_slice(j,i)==1) & (maskedImage(j,i)==1));
