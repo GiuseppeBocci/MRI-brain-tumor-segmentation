@@ -56,6 +56,7 @@ area_automatic = pixelArea*bwarea(ifill_slice);
 imageSegmenter(roi_slice);
 
 %% Plot of manually segmentation
+load("maskedImage.mat")
 pixelArea = MRId.pixdim(1)*MRId.pixdim(2); % mm^2
 maskedImage = logical(maskedImage);
 
