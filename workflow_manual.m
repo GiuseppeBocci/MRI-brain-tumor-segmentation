@@ -53,10 +53,12 @@ title(str)
 area_automatic = pixelArea*bwarea(ifill_slice);
 
 %% Manually segmentation of slice 135
-imageSegmenter(roi_slice);
+%imageSegmenter(roi_slice);
+
+%Done this step, we saved the output of imageSegmenter(roi_slice) in a file
+load("maskedImage.mat")
 
 %% Plot of manually segmentation
-load("maskedImage.mat")
 pixelArea = MRId.pixdim(1)*MRId.pixdim(2); % mm^2
 maskedImage = logical(maskedImage);
 
@@ -69,6 +71,7 @@ title(str)
 area_manual = pixelArea*bwarea(maskedImage);
 
 %% Segmentation performances
+
 TP = zeros(dimC(1),dimC(2));
 TN = zeros(dimC(1),dimC(2));
 FP = zeros(dimC(1),dimC(2));
@@ -94,5 +97,5 @@ sen = TP/(TP+FN);
 spec = TN/(TN+FP);
 
 %Dice coefficient
-dice = 2*TP/(area_automatic+area_manual);
+dice = 2*TP/(2*TP + FP + FN);
 
