@@ -13,7 +13,7 @@ estimation of its volume. To see resilience to noise, it's possible to add noise
 dedicated section.
 
 ### workflow_manul.m
-Compare the automatic and manual workflow for sagittal slice 135.
+Compare the automatic workflow to the manual segmentation for sagittal slice 135.
 
 ## Database
 ....
