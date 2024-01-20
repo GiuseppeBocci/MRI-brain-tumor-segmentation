@@ -1,5 +1,5 @@
 # MRI-brain-tumor-segmentation
-This repository contains the project **segmentation of an brain lesion from MRI** produced for the Biomedical Image Analysis module of the course BIOMEDICAL SIGNAL PROCESSING AND MEDICAL IMAGES taught by prof. Signorini Maria Gabriella and Augusto Bonilauri at "Politecnico di Milano" A.Y. 2023/2024.
+This repository contains the project **segmentation of an brain lesion from MRI** produced for the Medical Images module of the course BIOMEDICAL SIGNAL PROCESSING AND MEDICAL IMAGES taught by prof. Signorini Maria Gabriella and Augusto Bonilauri at "Politecnico di Milano" A.Y. 2023/2024.
 
 ## Goal
 The aim of the project is to preprocess and segment MRI cerebral volume of a single patient affected by a brain
