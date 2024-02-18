@@ -14,6 +14,3 @@ dedicated section.
 
 ### workflow_manul.m
 Compare the automatic workflow to manual segmentation for sagittal slice 135.
-
-## Database
-....
